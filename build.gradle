@@ -1,0 +1,86 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '2.7.13'
+	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+}
+
+// 모든 프로젝트에 적용.
+allprojects{
+	group = 'com.example'
+	version = '0.0.1-SNAPSHOT'
+	sourceCompatibility = '11'
+
+	repositories {
+		mavenCentral()
+	}
+}
+
+// 서브 프로젝트 전체에 적용.
+subprojects {
+	apply plugin: 'java'
+	// 위에서 불러온 plugin 을 적용 시켰으므로 버전을 명시하지
+	// 않아도 자식 프로젝트에서 2.7.7 버전을 받게된다.
+	apply plugin: 'org.springframework.boot'
+	apply plugin: 'io.spring.dependency-management'
+
+	// 공통적으로 사용하는 dependencies
+
+	dependencies {
+		// springboot
+		implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+		implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+		implementation 'org.springframework.boot:spring-boot-starter-web'
+		implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
+		annotationProcessor 'org.projectlombok:lombok'
+		compileOnly 'org.projectlombok:lombok'
+
+		// db
+		runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+
+		// security
+//		implementation 'org.springframework.boot:spring-boot-starter-security'
+		testImplementation 'org.springframework.boot:spring-boot-starter-test'
+		testImplementation 'org.springframework.security:spring-security-test'
+
+		// test
+		implementation 'org.springframework.boot:spring-boot-starter'
+		testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	}
+	// 롬복 설정
+	configurations {
+		compileOnly {
+			extendsFrom annotationProcessor
+		}
+	}
+
+	tasks.named('test') {
+		useJUnitPlatform()
+	}
+}
+
+project(':core') {
+	// 공통 코드
+
+	bootJar { enabled = false } // core 은 bootJar 로 패키징 할 필요 없음
+	jar { enabled = true }
+
+	dependencies {
+	}
+}
+
+project(':api') {
+	bootJar { enabled = true }
+	jar { enabled = false }
+
+	dependencies {
+		implementation  project(':core') // 컴파일 시 core project 로딩
+	}
+}
+
+
+
+
+
+
+
+

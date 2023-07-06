@@ -1,0 +1,8 @@
+// 아래 두 설정은 서버가 아니고 class 파일만 있을 경우 작성
+bootJar { enabled = false }
+jar { enabled = true }
+
+dependencies {
+
+}
+
