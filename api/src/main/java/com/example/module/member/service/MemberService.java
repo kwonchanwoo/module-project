@@ -29,11 +29,15 @@ public class MemberService {
     public void postMember(MemberCreateDto memberCreateDto) {
         memberRepository.save(
                 Member.builder()
-                .name(memberCreateDto.getName())
-                .sex(memberCreateDto.getSex())
-                .age(memberCreateDto.getAge())
-                .phoneNumber(memberCreateDto.getPhoneNumber())
-                .build());
+                        .name(memberCreateDto.getName())
+                        .sex(memberCreateDto.getSex())
+                        .age(memberCreateDto.getAge())
+                        .phoneNumber(memberCreateDto.getPhoneNumber())
+                        .build());
 
+    }
+
+    public MemberDto getMember(Member member) {
+        return new MemberDto(member);
     }
 }
