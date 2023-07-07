@@ -1,6 +1,7 @@
-package com.example.api.member.dto;
+package com.example.module.member.dto;
 
-import com.example.core.entity.Member;
+import com.example.module.entity.Member;
+import com.example.module.util._Enum.Gender;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
 public class MemberDto {
     private Long id;
     private String name;
-    private String sex;
+    private Gender sex;
     private int age;
     private String phoneNumber;
     private LocalDateTime createdAt;

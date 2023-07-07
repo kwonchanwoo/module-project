@@ -1,6 +1,6 @@
-package com.example.core.spec;
+package com.example.module.spec;
 
-import com.example.core.entity.Member;
+import com.example.module.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;

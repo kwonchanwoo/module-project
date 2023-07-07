@@ -4,7 +4,7 @@ server:
 # default
 spring:
   application:
-    name: user
+    name: api
   profiles:
     group:
       default:

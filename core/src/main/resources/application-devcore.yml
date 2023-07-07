@@ -19,7 +19,7 @@ spring:
         show_sql: true
         format_sql: true
         use_sql_comments: true
-        dialect: com.example.core.config.MysqlConfig
+        dialect: com.example.module.config.MysqlConfig
       #      root: debug
       #      me.hong.kotlinspring: debug
 
