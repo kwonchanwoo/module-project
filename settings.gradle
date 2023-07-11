@@ -1,4 +1,4 @@
 rootProject.name = 'module-project'
-include 'api'
+include 'user'
 include 'core'
 

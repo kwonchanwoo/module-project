@@ -22,4 +22,5 @@ spring:
         dialect: com.example.module.config.MysqlConfig
       #      root: debug
       #      me.hong.kotlinspring: debug
-
+jwt:
+  secret: VlwEyVBsYt9V7zq57TejMnVUyzblYcfPQye08f7MGVA9XkHa

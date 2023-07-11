@@ -2,6 +2,8 @@ package com.example.module.converter;
 
 import com.example.module.entity.Member;
 import com.example.module.repository.MemberRepository;
+import com.example.module.util.CommonException;
+import com.example.module.util._Enum.ErrorCode;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +19,7 @@ public class MemberConverter implements
 
     @Override
     public Member convert(String fileId) {
-        return repository.findById(Long.valueOf(fileId)).orElseThrow(() -> new RuntimeException("member not found"));
+        return repository.findById(Long.valueOf(fileId)).orElseThrow(() -> new CommonException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
     @Override
