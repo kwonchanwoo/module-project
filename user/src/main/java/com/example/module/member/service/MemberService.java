@@ -10,7 +10,6 @@ import com.example.module.util._Enum.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,16 +44,16 @@ public class MemberService {
                 }));
         memberRepository.save(
                 Member.builder()
-                        .name(memberCreateDto.getName())
+            .name(memberCreateDto.getName())
                         .email(memberCreateDto.getEmail())
-                        .password(passwordEncoder.encode(memberCreateDto.getPassword()))
-                        .sex(memberCreateDto.getSex())
-                        .age(memberCreateDto.getAge())
-                        .phoneNumber(memberCreateDto.getPhoneNumber())
-                        .roles(List.of("USER"))
-                        .build());
+            .password(passwordEncoder.encode(memberCreateDto.getPassword()))
+            .sex(memberCreateDto.getSex())
+            .age(memberCreateDto.getAge())
+            .phoneNumber(memberCreateDto.getPhoneNumber())
+            .roles(List.of("USER"))
+            .build());
 
-    }
+}
 
     @Transactional
     public void deleteMember(Member member) {

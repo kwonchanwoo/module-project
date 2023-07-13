@@ -4,6 +4,7 @@ import com.example.module.util.BaseEntity;
 import com.example.module.util._Enum.Gender;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.redis.core.RedisHash;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

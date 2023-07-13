@@ -5,6 +5,7 @@ import com.example.module.util.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyUtils;
@@ -29,6 +30,7 @@ import java.util.Map;
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final RedisTemplate redisTemplate;
 
     // 역할 계층 등록 ADMIN > USER
     @Bean
@@ -67,7 +69,7 @@ public class SecurityConfig {
                 .authenticationEntryPoint(new CustomAuthenticationEntryPoint())  // 토큰 없음, 시그니처 불일치, 토큰 만료 예외 처리
                 .accessDeniedHandler(new CustomAccessDeniedHandler()) // 토큰 인증 후 권한 거부 (인가 에러 예외처리)
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider,redisTemplate), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
