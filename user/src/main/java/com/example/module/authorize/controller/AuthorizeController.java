@@ -3,11 +3,14 @@ package com.example.module.authorize.controller;
 import com.example.module.authorize.dto.LoginDto;
 import com.example.module.authorize.service.AuthorizeService;
 import com.example.module.util.security.dto.TokenInfo;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SecurityException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,5 +23,17 @@ public class AuthorizeController {
             @RequestBody LoginDto loginDto
     ) {
         return authorizeService.login(loginDto);
+    }
+
+    @GetMapping("/refresh-token")
+    public TokenInfo refreshToken(
+            @RequestBody TokenInfo tokenInfo
+    ) {
+        return authorizeService.refreshToken(tokenInfo);
+    }
+
+    @ExceptionHandler({SecurityException.class, MalformedJwtException.class, IllegalArgumentException.class, ExpiredJwtException.class, UnsupportedJwtException.class})
+    public ResponseEntity<Void> jwtExceptionHandler(Exception e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 }

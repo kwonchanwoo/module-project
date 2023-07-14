@@ -1,5 +1,7 @@
 package com.example.module.config.security;
 
+import com.example.module.config.security.exception.CustomAccessDeniedHandler;
+import com.example.module.config.security.exception.CustomAuthenticationEntryPoint;
 import com.example.module.util.security.JwtAuthenticationFilter;
 import com.example.module.util.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -61,7 +63,8 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers(
                         "/members/join",
-                        "/authorize/login"
+                        "/authorize/login",
+                        "/authorize/refresh-token"
                 ).permitAll()
                 .anyRequest().hasRole("USER")
                 .and()
@@ -69,7 +72,7 @@ public class SecurityConfig {
                 .authenticationEntryPoint(new CustomAuthenticationEntryPoint())  // 토큰 없음, 시그니처 불일치, 토큰 만료 예외 처리
                 .accessDeniedHandler(new CustomAccessDeniedHandler()) // 토큰 인증 후 권한 거부 (인가 에러 예외처리)
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider,redisTemplate), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

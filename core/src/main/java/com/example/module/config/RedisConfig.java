@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.RedisKeyValueAdapter;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -15,7 +16,8 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Configuration
 @EnableRedisRepositories(
         basePackages = "com.example.module.repository",
-        includeFilters = @ComponentScan.Filter(type = FilterType.ANNOTATION, classes = RedisRepository.class)
+        includeFilters = @ComponentScan.Filter(type = FilterType.ANNOTATION, classes = RedisRepository.class),
+        enableKeyspaceEvents = RedisKeyValueAdapter.EnableKeyspaceEvents.ON_STARTUP // ttl(timeToLive)가 작동안되서 추가함
 )
 public class RedisConfig {
 

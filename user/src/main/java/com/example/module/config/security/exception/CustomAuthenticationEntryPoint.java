@@ -1,4 +1,4 @@
-package com.example.module.config.security;
+package com.example.module.config.security.exception;
 
 import com.example.module.util._Enum.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
