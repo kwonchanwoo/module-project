@@ -13,10 +13,9 @@ public enum ErrorCode {
 
     TOKEN_UNSUPPORTED(HttpStatus.BAD_REQUEST, 400, "지원되지 않는 JWT 토큰 형식입니다."),
 
-    //    RECORD_NOT_FOUND(HttpStatus.NOT_FOUND,404,"Record not found"),
-//    USER_NOT_FOUND(HttpStatus.NOT_FOUND,404, "User not found");
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "Member not found"),
-    MEMBER_DUPLICATED(HttpStatus.CONFLICT, 409, "Member is duplicated");
+    MEMBER_DUPLICATED(HttpStatus.CONFLICT, 409, "Member is duplicated"),
+    LOGIN_FAILED(HttpStatus.UNAUTHORIZED,401,"로그인에 실패하였습니다.");
 
     private final HttpStatus httpStatus;
     private final Integer code;
