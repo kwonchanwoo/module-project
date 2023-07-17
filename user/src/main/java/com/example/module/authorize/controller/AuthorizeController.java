@@ -32,6 +32,12 @@ public class AuthorizeController {
         return authorizeService.refreshToken(tokenInfo);
     }
 
+    @DeleteMapping("/logout")
+    public void logout(@RequestHeader(name = "Authorization") String accessToken){
+        authorizeService.logout(accessToken);
+    }
+
+
     @ExceptionHandler({SecurityException.class, MalformedJwtException.class, IllegalArgumentException.class, ExpiredJwtException.class, UnsupportedJwtException.class})
     public ResponseEntity<Void> jwtExceptionHandler(Exception e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();

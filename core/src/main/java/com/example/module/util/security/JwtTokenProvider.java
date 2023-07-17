@@ -9,6 +9,8 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -29,10 +31,13 @@ public class JwtTokenProvider {
 
     private final Key key;
 
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 60 * 1000L;              // 1분
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 10 * 60 * 1000L;              // 1분
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 7 * 24 * 60 * 60 * 1000L;    // 7일
 
-    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
+    private final RedisTemplate<String, String> redisTemplate;
+
+    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey, RedisTemplate<String, String> redisTemplate) {
+        this.redisTemplate = redisTemplate;
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
@@ -93,6 +98,12 @@ public class JwtTokenProvider {
 
     // 토큰 정보를 검증하는 메서드
     public boolean validateToken(String token) {
+        ValueOperations<String, String> ops = redisTemplate.opsForValue();
+        String blacklisted = ops.get(token);
+        if (blacklisted != null) {
+            throw new CommonException(ErrorCode.TOKEN_INVALID);
+        }
+
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;

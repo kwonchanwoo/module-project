@@ -4,10 +4,13 @@ import com.example.module.authorize.dto.LoginDto;
 import com.example.module.entity.Member;
 import com.example.module.repository.MemberRepository;
 import com.example.module.repository.RefreshTokenRepository;
+import com.example.module.util.CommonException;
+import com.example.module.util._Enum.ErrorCode;
 import com.example.module.util.redis.RefreshToken;
 import com.example.module.util.security.JwtTokenProvider;
 import com.example.module.util.security.dto.TokenInfo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -17,6 +20,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +33,7 @@ public class AuthorizeService implements UserDetailsService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
 
-//    private final RedisTemplate redisTemplate;  //RedisTemplate 방식
+    private final RedisTemplate redisTemplate;
 
     private final RefreshTokenRepository refreshTokenRepository;
 
@@ -46,17 +52,8 @@ public class AuthorizeService implements UserDetailsService {
         // 3. 인증 정보를 기반으로 JWT 토큰 생성
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
 
-        //4. RefreshToken Redis 저장 (expirationTime 설정을 통해 자동 삭제 처리) => RedisTemplate 방식
-//        redisTemplate.opsForValue()
-//                .set("RT:" + authentication.getName(),
-//                        tokenInfo.getRefreshToken(),
-//                        tokenInfo.getRefreshTokenExpirationTime(),
-//                        TimeUnit.MILLISECONDS
-//
-//                );
-
+        // 4-1. RefreshToken redis 저장 (RedisRepository 방식)
         refreshTokenRepository.save(new RefreshToken(authentication.getName(), tokenInfo.getRefreshToken()));
-
         return tokenInfo;
     }
 
@@ -85,13 +82,30 @@ public class AuthorizeService implements UserDetailsService {
         Authentication authentication = jwtTokenProvider.getAuthentication(tokenInfo.getAccessToken());
         String email = authentication.getName();
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("user 정보가 없습니다."));
+                .orElseThrow(() -> new CommonException(ErrorCode.MEMBER_NOT_FOUND));
         // Todo: 3 refreshToken과 갖고온 user 정보로 refreshToken 존재 여부 확인
         refreshTokenRepository
                 .findByEmailAndToken(member.getEmail(), tokenInfo.getRefreshToken())
-                .orElseThrow(() -> new RuntimeException("토큰이 올바르지 않습니다."));
+                .orElseThrow(() -> new CommonException(ErrorCode.TOKEN_INVALID));
 
         // Todo: 4 accessToken 재발급
         return jwtTokenProvider.generateToken(authentication, tokenInfo.getRefreshToken());
+    }
+
+    public void logout(String accessToken) {
+        accessToken = resolveToken(accessToken);
+        //Todo: 1. accessToken을 블랙리스트에 등록 (RestTemplate로 남은시간만큼 시간설정
+        redisTemplate.opsForValue().set(accessToken, "blacklisted", jwtTokenProvider.getExpiration(accessToken), TimeUnit.MILLISECONDS);
+        //Todo 1-1. 로그인한 유저 정보 갖고오기
+        Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+        //Todo: 2. redis 에 들어있는 refreshToken 정보를 삭제
+        refreshTokenRepository.deleteById(authentication.getName());
+    }
+
+    private String resolveToken(String accessToken) {
+        if (StringUtils.hasText(accessToken) && accessToken.startsWith("Bearer")) {
+            return accessToken.substring(7);
+        }
+        return null;
     }
 }

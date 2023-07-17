@@ -1,13 +1,12 @@
 package com.example.module.util.security;
 
-import com.example.module.repository.RefreshTokenRepository;
+import com.example.module.util.CommonException;
 import com.example.module.util._Enum.ErrorCode;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.SecurityException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
@@ -43,6 +42,8 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             request.setAttribute("exception", ErrorCode.TOKEN_EXPIRED);
         } catch (UnsupportedJwtException e) {
             request.setAttribute("exception", ErrorCode.TOKEN_UNSUPPORTED);
+        } catch (CommonException e){
+            request.setAttribute("exception",e.getEnumErrorCode());
         }
         chain.doFilter(request, response);
     }
