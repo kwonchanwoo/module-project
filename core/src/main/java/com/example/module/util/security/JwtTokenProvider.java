@@ -1,5 +1,6 @@
 package com.example.module.util.security;
 
+import com.example.module.repository.MemberRepository;
 import com.example.module.util.CommonException;
 import com.example.module.util._Enum.ErrorCode;
 import com.example.module.util.security.dto.TokenInfo;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class JwtTokenProvider {
+    private final MemberRepository memberRepository;
 
     private final Key key;
 
@@ -36,10 +38,12 @@ public class JwtTokenProvider {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey, RedisTemplate<String, String> redisTemplate) {
+    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey, RedisTemplate<String, String> redisTemplate,
+                            MemberRepository memberRepository) {
         this.redisTemplate = redisTemplate;
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
+        this.memberRepository = memberRepository;
     }
 
     // 유저 정보를 가지고 AccessToken, RefreshToken 을 생성하는 메서드
@@ -92,7 +96,8 @@ public class JwtTokenProvider {
                         .collect(Collectors.toList());
 
         // UserDetails 객체를 만들어서 Authentication 리턴
-        UserDetails principal = new User(claims.getSubject(), "", authorities);
+//        UserDetails principal = new User(claims.getSubject(), "", authorities);
+        UserDetails principal = memberRepository.findByEmail(claims.getSubject()).get();
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 

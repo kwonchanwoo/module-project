@@ -30,7 +30,8 @@ public class AuditorAwareImpl implements AuditorAware<Member> {
             return Optional.empty();
         }
 ////        로그인이 되어있을 시 해당 정보의 Name 에 저장되어있는 seq 번호로 UserRepository 에서 유저정보를 찾아서 반환
-        return memberRepository.findByEmail(authentication.getName());
+        return Optional.ofNullable(authentication.getPrincipal()).map((auth -> (Member)auth));
+//        return memberRepository.findByEmail(authentication.getName());
 //        return memberRepository.findById(1L);
     }
 }

@@ -4,18 +4,24 @@ import com.example.module.entity.Member;
 import com.example.module.member.dto.MemberCreateDto;
 import com.example.module.member.dto.MemberDto;
 import com.example.module.repository.MemberRepository;
+import com.example.module.repository.RefreshTokenRepository;
 import com.example.module.spec.MemberSpec;
 import com.example.module.util.CommonException;
 import com.example.module.util._Enum.ErrorCode;
+import com.example.module.util.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Transactional(readOnly = true)
@@ -23,8 +29,12 @@ import java.util.Map;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-
     private final PasswordEncoder passwordEncoder;
+
+    private final JwtTokenProvider jwtTokenProvider;
+    private final RedisTemplate redisTemplate;
+
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public Page<MemberDto> getMemberList(Pageable pageable, Map<String, Object> filters) {
         return memberRepository
@@ -56,9 +66,23 @@ public class MemberService {
 }
 
     @Transactional
-    public void deleteMember(Member member) {
+    public void deleteMember(String accessToken,Member member) {
+        accessToken = resolveToken(accessToken);
         // Todo: 실제 로그인한사람하고 탈퇴하는사람이 같은지 체크가 필요할거같음(User) , admin은 별도 체크 X
         member.setDeleted(true);
+        //Todo: 1. accessToken을 블랙리스트에 등록 (RestTemplate로 남은시간만큼 시간설정
+        redisTemplate.opsForValue().set(accessToken, "blacklisted", jwtTokenProvider.getExpiration(accessToken), TimeUnit.MILLISECONDS);
+        //Todo 1-1. 로그인한 유저 정보 갖고오기
+        Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+        //Todo: 2. redis 에 들어있는 refreshToken 정보를 삭제
+        refreshTokenRepository.deleteById(authentication.getName());
+    }
+
+    private String resolveToken(String accessToken) {
+        if (StringUtils.hasText(accessToken) && accessToken.startsWith("Bearer")) {
+            return accessToken.substring(7);
+        }
+        return null;
     }
 
 }

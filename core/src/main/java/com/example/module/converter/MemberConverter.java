@@ -12,14 +12,14 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class MemberConverter implements
-        org.springframework.core.convert.converter.Converter<String, Member>,
-        com.fasterxml.jackson.databind.util.Converter<String, Member> {
+        org.springframework.core.convert.converter.Converter<Long, Member>,
+        com.fasterxml.jackson.databind.util.Converter<Long, Member> {
 
     private final MemberRepository repository;
 
     @Override
-    public Member convert(String fileId) {
-        return repository.findById(Long.valueOf(fileId)).orElseThrow(() -> new CommonException(ErrorCode.MEMBER_NOT_FOUND));
+    public Member convert(Long fileId) {
+        return repository.findById(fileId).orElseThrow(() -> new CommonException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
     @Override
