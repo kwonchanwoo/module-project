@@ -34,13 +34,13 @@ public class AuthorizeService implements UserDetailsService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    private final RedisTemplate redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional
     public TokenInfo login(LoginDto loginDto) {
-        try{
+        try {
             // 1. Login ID/PW 를 기반으로 Authentication 객체 생성
             // 이때 authentication 는 인증 여부를 확인하는 authenticated 값이 false
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
@@ -57,7 +57,7 @@ public class AuthorizeService implements UserDetailsService {
             // 4-1. RefreshToken redis 저장 (RedisRepository 방식)
             refreshTokenRepository.save(new RefreshToken(authentication.getName(), tokenInfo.getRefreshToken()));
             return tokenInfo;
-        }catch(AuthenticationException ex){ // 인증 실패
+        } catch (AuthenticationException ex) { // 인증 실패
             throw new CommonException(ErrorCode.LOGIN_FAILED);
         }
     }
@@ -65,6 +65,8 @@ public class AuthorizeService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return memberRepository.findByEmail(email)
+                // 접속한 유저의 권한이 User(일반회원) 일때, 계정이 삭제됫는지 체크
+                .filter(Member::isEnabled)
                 .map(this::createUserDetails)
                 .orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다."));
     }
@@ -81,29 +83,32 @@ public class AuthorizeService implements UserDetailsService {
     public TokenInfo refreshToken(
             TokenInfo tokenInfo
     ) {
-        // Todo: 1. refreshToken의 만료 체크(validation)
+        // 1. refreshToken의 만료 체크(validation)
         jwtTokenProvider.validateToken(tokenInfo.getRefreshToken());
-        // Todo: 2. acessToken으로 user정보 가져오기
-        Authentication authentication = jwtTokenProvider.getAuthentication(tokenInfo.getAccessToken());
-        String email = authentication.getName();
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new CommonException(ErrorCode.MEMBER_NOT_FOUND));
-        // Todo: 3 refreshToken과 갖고온 user 정보로 refreshToken 존재 여부 확인
-        refreshTokenRepository
-                .findByEmailAndToken(member.getEmail(), tokenInfo.getRefreshToken())
-                .orElseThrow(() -> new CommonException(ErrorCode.TOKEN_INVALID));
 
-        // Todo: 4 accessToken 재발급
+        // 2. acessToken으로 user정보 가져오기
+        Authentication authentication = jwtTokenProvider.getAuthentication(tokenInfo.getAccessToken());
+        Member member = memberRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new CommonException(ErrorCode.MEMBER_NOT_FOUND));
+
+        // 3. refreshToken과 갖고온 user 정보로 refreshToken 존재 여부 확인
+        if (refreshTokenRepository.findByEmailAndToken(member.getEmail(), tokenInfo.getRefreshToken()).isEmpty()) {
+            throw new CommonException(ErrorCode.TOKEN_INVALID);
+        }
+
+        // 4. accessToken 재발급
         return jwtTokenProvider.generateToken(authentication, tokenInfo.getRefreshToken());
     }
 
     public void logout(String accessToken) {
         accessToken = resolveToken(accessToken);
-        //Todo: 1. accessToken을 블랙리스트에 등록 (RestTemplate로 남은시간만큼 시간설정
-        redisTemplate.opsForValue().set(accessToken, "blacklisted", jwtTokenProvider.getExpiration(accessToken), TimeUnit.MILLISECONDS);
-        //Todo 1-1. 로그인한 유저 정보 갖고오기
+        //1. accessToken을 블랙리스트에 등록 (RestTemplate로 남은시간만큼 시간설정
+        redisTemplate.opsForValue().set(
+                accessToken, "blacklisted", jwtTokenProvider.getExpiration(accessToken), TimeUnit.MILLISECONDS
+        );
+        //1-1. 로그인한 유저 정보 갖고오기
         Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
-        //Todo: 2. redis 에 들어있는 refreshToken 정보를 삭제
+        //2. redis 에 들어있는 refreshToken 정보를 삭제
         refreshTokenRepository.deleteById(authentication.getName());
     }
 

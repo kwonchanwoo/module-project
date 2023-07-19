@@ -1,7 +1,6 @@
 package com.example.module.util;
 
 import com.example.module.entity.Member;
-import com.example.module.repository.MemberRepository;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -9,12 +8,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.util.Optional;
 
 public class AuditorAwareImpl implements AuditorAware<Member> {
-
-    private final MemberRepository memberRepository;
-
-    public AuditorAwareImpl(MemberRepository memberRepository) {
-        this.memberRepository = memberRepository;
-    }
 
     @Override
     public Optional<Member> getCurrentAuditor() {
@@ -30,8 +23,6 @@ public class AuditorAwareImpl implements AuditorAware<Member> {
             return Optional.empty();
         }
 ////        로그인이 되어있을 시 해당 정보의 Name 에 저장되어있는 seq 번호로 UserRepository 에서 유저정보를 찾아서 반환
-        return Optional.ofNullable(authentication.getPrincipal()).map((auth -> (Member)auth));
-//        return memberRepository.findByEmail(authentication.getName());
-//        return memberRepository.findById(1L);
+        return Optional.ofNullable(authentication.getPrincipal()).map((Member.class::cast));
     }
 }

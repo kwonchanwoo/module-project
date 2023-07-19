@@ -2,7 +2,6 @@ package com.example.module.config;
 
 import com.example.module.annotation.RedisRepository;
 import com.example.module.entity.Member;
-import com.example.module.repository.MemberRepository;
 import com.example.module.util.AuditorAwareImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -19,14 +18,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @EnableJpaAuditing(auditorAwareRef = "auditorProvider")
 public class JpaAuditConfiguration {
 
-    private final MemberRepository memberRepository;
-
-    public JpaAuditConfiguration(MemberRepository memberRepository) {
-        this.memberRepository = memberRepository;
-    }
-
     @Bean
     public AuditorAware<Member> auditorProvider() {
-        return new AuditorAwareImpl(memberRepository);
+        return new AuditorAwareImpl();
     }
 }

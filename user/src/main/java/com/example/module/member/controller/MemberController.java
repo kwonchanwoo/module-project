@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -46,9 +45,8 @@ public class MemberController {
     // 회원 탈퇴
     @DeleteMapping
     public void deleteMember(
-            @RequestHeader(name = "Authorization") String accessToken,
-            @AuthenticationPrincipal Member member
+            @RequestHeader(name = "Authorization") String accessToken
     ) {
-        memberService.deleteMember(accessToken,member);
+        memberService.deleteMember(accessToken);
     }
 }

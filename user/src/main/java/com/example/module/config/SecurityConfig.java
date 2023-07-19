@@ -1,7 +1,7 @@
-package com.example.module.config.security;
+package com.example.module.config;
 
-import com.example.module.config.security.exception.CustomAccessDeniedHandler;
-import com.example.module.config.security.exception.CustomAuthenticationEntryPoint;
+import com.example.module.util.security.exception.CustomAccessDeniedHandler;
+import com.example.module.util.security.exception.CustomAuthenticationEntryPoint;
 import com.example.module.util.security.JwtAuthenticationFilter;
 import com.example.module.util.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ import java.util.Map;
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final RedisTemplate redisTemplate;
+    private final RedisTemplate<String,Object> redisTemplate;
 
     // 역할 계층 등록 ADMIN > USER
     @Bean

@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +33,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final RedisTemplate redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     private final RefreshTokenRepository refreshTokenRepository;
 
@@ -54,27 +55,30 @@ public class MemberService {
                 }));
         memberRepository.save(
                 Member.builder()
-            .name(memberCreateDto.getName())
+                        .name(memberCreateDto.getName())
                         .email(memberCreateDto.getEmail())
-            .password(passwordEncoder.encode(memberCreateDto.getPassword()))
-            .sex(memberCreateDto.getSex())
-            .age(memberCreateDto.getAge())
-            .phoneNumber(memberCreateDto.getPhoneNumber())
-            .roles(List.of("USER"))
-            .build());
+                        .password(passwordEncoder.encode(memberCreateDto.getPassword()))
+                        .sex(memberCreateDto.getSex())
+                        .age(memberCreateDto.getAge())
+                        .phoneNumber(memberCreateDto.getPhoneNumber())
+                        .roles(List.of("USER"))
+                        .build());
 
-}
+    }
 
     @Transactional
-    public void deleteMember(String accessToken,Member member) {
+    public void deleteMember(String accessToken) {
         accessToken = resolveToken(accessToken);
-        // Todo: 실제 로그인한사람하고 탈퇴하는사람이 같은지 체크가 필요할거같음(User) , admin은 별도 체크 X
+        var member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        //실제 로그인한사람하고 탈퇴하는사람이 같은지 체크가 필요할거같음(User) , admin은 별도 체크 X
         member.setDeleted(true);
-        //Todo: 1. accessToken을 블랙리스트에 등록 (RestTemplate로 남은시간만큼 시간설정
-        redisTemplate.opsForValue().set(accessToken, "blacklisted", jwtTokenProvider.getExpiration(accessToken), TimeUnit.MILLISECONDS);
-        //Todo 1-1. 로그인한 유저 정보 갖고오기
+        //1. accessToken을 블랙리스트에 등록 (RestTemplate로 남은시간만큼 시간설정
+        redisTemplate.opsForValue().set(
+                accessToken, "blacklisted", jwtTokenProvider.getExpiration(accessToken), TimeUnit.MILLISECONDS
+        );
+        //1-1. 로그인한 유저 정보 갖고오기
         Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
-        //Todo: 2. redis 에 들어있는 refreshToken 정보를 삭제
+        //2. redis 에 들어있는 refreshToken 정보를 삭제
         refreshTokenRepository.deleteById(authentication.getName());
     }
 

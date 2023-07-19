@@ -4,7 +4,6 @@ import com.example.module.util.BaseEntity;
 import com.example.module.util._Enum.Gender;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.springframework.data.redis.core.RedisHash;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,7 +23,7 @@ import java.util.stream.Collectors;
 public class Member extends BaseEntity implements UserDetails {
     private String name;
 
-    @Column(unique = true,nullable = false)
+    @Column(unique = true, nullable = false)
     private String email;
 
     @Column(nullable = false)
@@ -63,9 +62,8 @@ public class Member extends BaseEntity implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.roles.contains("ADMIN") || !this.isDeleted();
     }
-
     @Enumerated(EnumType.STRING)
     private Gender sex;
 
