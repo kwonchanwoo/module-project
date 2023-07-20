@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Map;
 
 @RestController
@@ -38,7 +39,7 @@ public class MemberController {
 
     // 가입
     @PostMapping("/join")
-    public void join(@RequestBody MemberCreateDto memberCreateDto) {
+    public void join(@Valid  @RequestBody MemberCreateDto memberCreateDto) {
         memberService.join(memberCreateDto);
     }
 

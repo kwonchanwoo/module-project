@@ -15,7 +15,9 @@ public enum ErrorCode {
 
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "Member not found"),
     MEMBER_DUPLICATED(HttpStatus.CONFLICT, 409, "Member is duplicated"),
-    LOGIN_FAILED(HttpStatus.UNAUTHORIZED,401,"로그인에 실패하였습니다.");
+    LOGIN_FAILED(HttpStatus.UNAUTHORIZED,401,"로그인에 실패하였습니다."),
+
+    ENUM_GENDER_INVALID(HttpStatus.BAD_REQUEST,400,"성별을 잘못 입력하셨습니다.");
 
     private final HttpStatus httpStatus;
     private final Integer code;
