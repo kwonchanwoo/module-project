@@ -32,7 +32,6 @@ import java.util.Map;
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final RedisTemplate<String,Object> redisTemplate;
 
     // 역할 계층 등록 ADMIN > USER
     @Bean

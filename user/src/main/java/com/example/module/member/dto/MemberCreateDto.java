@@ -22,7 +22,7 @@ public class MemberCreateDto {
     @Email(message = "이메일 형식이 올바르지 않습니다.")
     private String email;
     @Pattern(regexp = "^(?=.*\\d)(?=.*[!@#$%^&*])(?=.*[a-zA-Z]).{8,}$"
-            , message = "비밀번호 형식을 지켜주세요(숫자,특수문자 최소1개,최소 길이 8이상"
+            , message = "비밀번호 형식을 지켜주세요(숫자,특수문자 최소1개,최소 길이 8이상)"
     )
     private String password;
     @Valid

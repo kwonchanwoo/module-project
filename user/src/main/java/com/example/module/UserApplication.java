@@ -1,13 +1,7 @@
 package com.example.module;
 
-import com.example.module.config.JpaConfig;
-import com.example.module.config.RedisConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
-import java.util.Arrays;
 
 //@SpringBootApplication(scanBasePackages = {"com.example.module", "com.example.module"})
 //@EntityScan(basePackages = {"com.example.core.entity"})
@@ -17,7 +11,21 @@ public class UserApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(UserApplication.class, args);
+//        System.out.println("sumTen(10) = " + sumTen(10));
 
     }
 
+//    static int sumTen(int i) {
+//        if (i <= 0) {
+//            System.out.println("i = " + i);
+//            return i;
+//        } else {
+//            System.out.println("ai = " + i);
+//            val result = sumTen(i - 1) + i;
+//            System.out.println("bi = " + i);
+//            System.out.println("sumTen(i - 1) + i = " + result);
+//            return result;
+//        }
+//
+//    }
 }

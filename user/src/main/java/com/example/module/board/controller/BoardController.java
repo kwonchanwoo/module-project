@@ -1,8 +1,10 @@
 package com.example.module.board.controller;
 
 import com.example.module.board.dto.BoardCreateDto;
+import com.example.module.board.dto.BoardDetailDto;
 import com.example.module.board.dto.BoardDto;
 import com.example.module.board.service.BoardService;
+import com.example.module.entity.Board;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,8 +25,24 @@ public class BoardController {
         return ResponseEntity.ok(boardService.getBoardList(pageable, filters));
     }
 
+    @GetMapping("{board}")
+    public ResponseEntity<BoardDetailDto> getBoardDetail(@PathVariable Board board){
+        return ResponseEntity.ok(boardService.getBoardDetail(board));
+    }
+
     @PostMapping
     public void postBoard(@Valid @RequestBody BoardCreateDto boardCreateDto) {
         boardService.postBoard(boardCreateDto);
     }
+
+    @PatchMapping("{board}")
+    public void patchBoard(@PathVariable Board board,@Valid @RequestBody BoardCreateDto boardCreateDto){
+        boardService.patchBoard(board,boardCreateDto);
+    }
+
+    @DeleteMapping("{board}")
+    public void deleteBoard(@PathVariable Board board){
+        boardService.deleteBoard(board);
+    }
+
 }

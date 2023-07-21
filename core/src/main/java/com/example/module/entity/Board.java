@@ -9,7 +9,6 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -20,7 +19,7 @@ import java.util.List;
 @SuperBuilder
 public class Board extends BaseEntity {
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     String title;
     @Lob
     String contents;
@@ -29,6 +28,6 @@ public class Board extends BaseEntity {
     BoardCategory boardCategory;
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<BoardComment> boardComments = new ArrayList<>();
+    private List<BoardComment> boardComments;
 
 }

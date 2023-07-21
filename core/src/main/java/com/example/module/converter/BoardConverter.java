@@ -1,7 +1,7 @@
 package com.example.module.converter;
 
-import com.example.module.entity.Member;
-import com.example.module.repository.MemberRepository;
+import com.example.module.entity.Board;
+import com.example.module.repository.BoardRepository;
 import com.example.module.util.CommonException;
 import com.example.module.util._Enum.ErrorCode;
 import com.fasterxml.jackson.databind.JavaType;
@@ -11,15 +11,15 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class MemberConverter implements
-        org.springframework.core.convert.converter.Converter<String, Member>,
-        com.fasterxml.jackson.databind.util.Converter<String, Member> {
+public class BoardConverter implements
+        org.springframework.core.convert.converter.Converter<String, Board>,
+        com.fasterxml.jackson.databind.util.Converter<String, Board> {
 
-    private final MemberRepository repository;
+    private final BoardRepository repository;
 
     @Override
-    public Member convert(String id) {
-        return repository.findById(Long.valueOf(id)).orElseThrow(() -> new CommonException(ErrorCode.MEMBER_NOT_FOUND));
+    public Board convert(String id) {
+        return repository.findById(Long.parseLong(id)).orElseThrow(() -> new CommonException(ErrorCode.BOARD_NOT_FOUND));
     }
 
     @Override
@@ -29,6 +29,6 @@ public class MemberConverter implements
 
     @Override
     public JavaType getOutputType(TypeFactory typeFactory) {
-        return typeFactory.constructType(Member.class);
+        return typeFactory.constructType(Board.class);
     }
 }

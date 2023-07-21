@@ -8,6 +8,8 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -16,19 +18,16 @@ import javax.persistence.*;
 @NoArgsConstructor
 @SuperBuilder
 public class BoardComment extends BaseEntity {
-
     @ManyToOne
     @JoinColumn(name = "board_id")
     private Board board;
 
+    @ManyToOne()
+    @JoinColumn(name = "parent_id")
+    private BoardComment parent;
+
     @Lob
     private String contents;
-
-    @ManyToOne
-    @JoinColumn(name = "target_id")
-    private BoardComment targetId; // 자기 자신을 참조하는 관계
-
-    @Column(nullable = false)
-    private int commentOrder; // 게시판 댓글 순서
-
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BoardComment> boardComments = new ArrayList<>();
 }

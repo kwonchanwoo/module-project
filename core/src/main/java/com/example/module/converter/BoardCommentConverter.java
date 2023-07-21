@@ -1,7 +1,7 @@
 package com.example.module.converter;
 
-import com.example.module.entity.Member;
-import com.example.module.repository.MemberRepository;
+import com.example.module.entity.BoardComment;
+import com.example.module.repository.BoardCommentRepository;
 import com.example.module.util.CommonException;
 import com.example.module.util._Enum.ErrorCode;
 import com.fasterxml.jackson.databind.JavaType;
@@ -11,15 +11,15 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class MemberConverter implements
-        org.springframework.core.convert.converter.Converter<String, Member>,
-        com.fasterxml.jackson.databind.util.Converter<String, Member> {
+public class BoardCommentConverter implements
+        org.springframework.core.convert.converter.Converter<String, BoardComment>,
+        com.fasterxml.jackson.databind.util.Converter<String, BoardComment> {
 
-    private final MemberRepository repository;
+    private final BoardCommentRepository repository;
 
     @Override
-    public Member convert(String id) {
-        return repository.findById(Long.valueOf(id)).orElseThrow(() -> new CommonException(ErrorCode.MEMBER_NOT_FOUND));
+    public BoardComment convert(String id) {
+        return repository.findById(Long.parseLong(id)).orElseThrow(() -> new CommonException(ErrorCode.BOARD_COMMENT_NOT_FOUND));
     }
 
     @Override
@@ -29,6 +29,6 @@ public class MemberConverter implements
 
     @Override
     public JavaType getOutputType(TypeFactory typeFactory) {
-        return typeFactory.constructType(Member.class);
+        return typeFactory.constructType(BoardComment.class);
     }
 }

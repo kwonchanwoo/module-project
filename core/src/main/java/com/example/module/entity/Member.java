@@ -62,7 +62,7 @@ public class Member extends BaseEntity implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return this.roles.contains("ADMIN") || !this.isDeleted();
+        return !this.isDeleted();
     }
     @Enumerated(EnumType.STRING)
     private Gender sex;

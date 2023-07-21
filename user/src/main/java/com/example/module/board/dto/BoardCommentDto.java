@@ -6,20 +6,26 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class BoardCommentDto {
 
+    private Long commentId;
     private String contents;
-    private Long targetId;
-    private int commentOrder;
+    private List<BoardCommentDto> boardCommentsList;
 
 
     public BoardCommentDto(BoardComment boardComment) {
+        this.commentId = boardComment.getId();
         this.contents = boardComment.getContents();
-        this.targetId = boardComment.getId();
-        this.commentOrder = boardComment.getCommentOrder();
+        this.boardCommentsList = boardComment.getBoardComments()
+                .stream()
+                .map(BoardCommentDto::new)
+                .collect(Collectors.toList());
     }
 }
