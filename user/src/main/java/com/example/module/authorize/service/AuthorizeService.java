@@ -89,7 +89,7 @@ public class AuthorizeService implements UserDetailsService {
         // 2. acessToken으로 user정보 가져오기
         Authentication authentication = jwtTokenProvider.getAuthentication(tokenInfo.getAccessToken());
         Member member = memberRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new CommonException(ErrorCode.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new CommonException(ErrorCode.ACCESS_DENIED));
 
         // 3. refreshToken과 갖고온 user 정보로 refreshToken 존재 여부 확인
         if (refreshTokenRepository.findByEmailAndToken(member.getEmail(), tokenInfo.getRefreshToken()).isEmpty()) {

@@ -19,7 +19,7 @@ public class BoardCommentConverter implements
 
     @Override
     public BoardComment convert(String id) {
-        return repository.findById(Long.parseLong(id)).orElseThrow(() -> new CommonException(ErrorCode.BOARD_COMMENT_NOT_FOUND));
+        return repository.findById(Long.parseLong(id)).orElseThrow(() -> new CommonException(ErrorCode.ACCESS_DENIED));
     }
 
     @Override
