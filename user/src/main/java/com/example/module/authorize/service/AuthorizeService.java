@@ -95,17 +95,17 @@ public class AuthorizeService implements UserDetailsService {
         if (refreshTokenRepository.findByEmailAndToken(member.getEmail(), tokenInfo.getRefreshToken()).isEmpty()) {
             throw new CommonException(ErrorCode.TOKEN_INVALID);
         }
+        //4. accessToken을 블랙리스트에 등록 (RestTemplate로 남은시간만큼 시간설정
+        addBlackList(tokenInfo.getAccessToken());
 
-        // 4. accessToken 재발급
+        // 5. accessToken 재발급
         return jwtTokenProvider.generateToken(authentication, tokenInfo.getRefreshToken());
     }
 
     public void logout(String accessToken) {
         accessToken = resolveToken(accessToken);
         //1. accessToken을 블랙리스트에 등록 (RestTemplate로 남은시간만큼 시간설정
-        redisTemplate.opsForValue().set(
-                accessToken, "blacklisted", jwtTokenProvider.getExpiration(accessToken), TimeUnit.MILLISECONDS
-        );
+        addBlackList(accessToken);
         //1-1. 로그인한 유저 정보 갖고오기
         Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
         //2. redis 에 들어있는 refreshToken 정보를 삭제
@@ -117,5 +117,11 @@ public class AuthorizeService implements UserDetailsService {
             return accessToken.substring(7);
         }
         return null;
+    }
+
+    private void addBlackList(String accessToken){
+        redisTemplate.opsForValue().set(
+                accessToken, "blacklisted", jwtTokenProvider.getExpiration(accessToken), TimeUnit.MILLISECONDS
+        );
     }
 }

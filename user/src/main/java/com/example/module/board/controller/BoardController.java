@@ -1,8 +1,8 @@
 package com.example.module.board.controller;
 
-import com.example.module.board.dto.BoardCreateDto;
-import com.example.module.board.dto.BoardDetailDto;
-import com.example.module.board.dto.BoardDto;
+import com.example.module.board.dto.request.BoardCreateDto;
+import com.example.module.board.dto.response.BoardDetailDto;
+import com.example.module.board.dto.response.BoardDto;
 import com.example.module.board.service.BoardService;
 import com.example.module.entity.Board;
 import lombok.RequiredArgsConstructor;

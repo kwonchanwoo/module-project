@@ -1,4 +1,4 @@
-package com.example.module.board.dto;
+package com.example.module.board.dto.response;
 
 import com.example.module.entity.Board;
 import com.example.module.entity.BoardComment;
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BoardDto {
+public class BoardDetailDto {
     private Long id;
     private String title;
     private String contents;
@@ -25,7 +25,7 @@ public class BoardDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public BoardDto(Board board) {
+    public BoardDetailDto(Board board) {
         this.id = board.getId();
         this.title = board.getTitle();
         this.contents = board.getContents();

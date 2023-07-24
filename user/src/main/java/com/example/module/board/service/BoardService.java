@@ -1,13 +1,10 @@
 package com.example.module.board.service;
 
-import com.example.module.board.dto.BoardCreateDto;
-import com.example.module.board.dto.BoardDetailDto;
-import com.example.module.board.dto.BoardDto;
+import com.example.module.board.dto.request.BoardCreateDto;
+import com.example.module.board.dto.response.BoardDetailDto;
+import com.example.module.board.dto.response.BoardDto;
 import com.example.module.entity.Board;
-import com.example.module.entity.Member;
 import com.example.module.repository.BoardRepository;
-import com.example.module.util.CommonException;
-import com.example.module.util._Enum.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Map;
 
 import static com.example.module.spec.BoardSpec.specBoard;
-import static com.example.module.util.security.SecurityContextHelper.getPrincipal;
 import static com.example.module.util.security.SecurityContextHelper.isAuthorizedForMember;
 
 @Service

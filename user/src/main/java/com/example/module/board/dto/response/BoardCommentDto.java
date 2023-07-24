@@ -1,7 +1,6 @@
-package com.example.module.board.dto;
+package com.example.module.board.dto.response;
 
 import com.example.module.entity.BoardComment;
-import com.example.module.entity.Member;
 import com.example.module.member.dto.MemberDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

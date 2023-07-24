@@ -1,4 +1,4 @@
-package com.example.module.board.dto;
+package com.example.module.board.dto.request;
 
 import com.example.module.converter.BoardCommentConverter;
 import com.example.module.converter.BoardConverter;

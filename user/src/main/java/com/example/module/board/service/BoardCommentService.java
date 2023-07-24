@@ -1,8 +1,8 @@
 package com.example.module.board.service;
 
-import com.example.module.board.dto.BoardCommentCreateDto;
-import com.example.module.board.dto.BoardCommentDto;
-import com.example.module.board.dto.BoardCommentUpdateDto;
+import com.example.module.board.dto.request.BoardCommentCreateDto;
+import com.example.module.board.dto.response.BoardCommentDto;
+import com.example.module.board.dto.request.BoardCommentUpdateDto;
 import com.example.module.entity.Board;
 import com.example.module.entity.BoardComment;
 import com.example.module.repository.BoardCommentRepository;
