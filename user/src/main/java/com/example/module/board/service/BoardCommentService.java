@@ -2,6 +2,7 @@ package com.example.module.board.service;
 
 import com.example.module.board.dto.BoardCommentCreateDto;
 import com.example.module.board.dto.BoardCommentDto;
+import com.example.module.board.dto.BoardCommentUpdateDto;
 import com.example.module.entity.Board;
 import com.example.module.entity.BoardComment;
 import com.example.module.repository.BoardCommentRepository;
@@ -13,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+import static com.example.module.util.security.SecurityContextHelper.isAuthorizedForMember;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -20,8 +23,9 @@ public class BoardCommentService {
     private final BoardCommentRepository boardCommentRepository;
 
     public Page<BoardCommentDto> getBoardCommentList(Board board, Pageable pageable) {
+        // Todo: 삭제된 게시판의 댓글은 보이지않도록 처리해야함
         return boardCommentRepository
-                .findByBoardOrderByIdDesc(board, pageable)
+                .findAllBoardCommentCustom(board, pageable)
                 .map((BoardCommentDto::new));
     }
 
@@ -39,11 +43,13 @@ public class BoardCommentService {
     }
     @Transactional
     public void deleteBoardComment(BoardComment boardComment) {
+        isAuthorizedForMember(boardComment.getCreatedMember());
         boardComment.setDeleted(true);
     }
 
     @Transactional
-    public void patchBoardComment(BoardComment boardComment, BoardCommentCreateDto boardCommentCreateDto) {
-        boardComment.setContents(boardCommentCreateDto.getContents());
+    public void patchBoardComment(BoardComment boardComment, BoardCommentUpdateDto boardCommentUpdateDto) {
+        isAuthorizedForMember(boardComment.getCreatedMember());
+        boardComment.setContents(boardCommentUpdateDto.getContents());
     }
 }

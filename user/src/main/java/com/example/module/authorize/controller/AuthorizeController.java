@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("authorize")
@@ -20,7 +22,7 @@ public class AuthorizeController {
 
     @PostMapping("/login")
     public TokenInfo login(
-            @RequestBody LoginDto loginDto
+            @Valid @RequestBody LoginDto loginDto
     ) {
         return authorizeService.login(loginDto);
     }

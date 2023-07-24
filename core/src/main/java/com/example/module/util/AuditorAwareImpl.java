@@ -3,16 +3,17 @@ package com.example.module.util;
 import com.example.module.entity.Member;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Optional;
+
+import static com.example.module.util.security.SecurityContextHelper.getAuthentication;
 
 public class AuditorAwareImpl implements AuditorAware<Member> {
 
     @Override
     public Optional<Member> getCurrentAuditor() {
 ////        현재 로그인한 SecurityContextHolder 에서 정보를 가져옴
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = getAuthentication();
 ////        만일 로그인한 정보가 null 이 아니고 인증이 되어있고 name 이 anonymousUser(인증되지 않은 유저)가 아닐 경우 로그인 처리
         if (
                 authentication == null

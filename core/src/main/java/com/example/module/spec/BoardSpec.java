@@ -1,12 +1,9 @@
 package com.example.module.spec;
 
 import com.example.module.entity.Board;
-import com.example.module.entity.Member;
+import com.example.module.util.security.SecurityContextHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -15,21 +12,24 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 
 @Component
 @RequiredArgsConstructor
 public class BoardSpec {
+
     private static void removePagerValue(Map<String, Object> map) {
         map.remove("page");
         map.remove("size");
         map.remove("sort");
     }
 
-    private static boolean isAdmin(){
-        Member member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Collection<? extends GrantedAuthority> authorities = member.getAuthorities();
-        return authorities.contains("ADMIN");
+    private static boolean isAdmin() {
+     return SecurityContextHelper.isAdmin();
     }
 
     public static Specification<Board> specBoard(Map<String, Object> map) {

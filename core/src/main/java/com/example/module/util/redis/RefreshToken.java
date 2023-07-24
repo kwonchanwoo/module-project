@@ -9,7 +9,8 @@ import org.springframework.data.redis.core.index.Indexed;
 
 @Getter
 @Setter
-@RedisHash(value="refreshToken",timeToLive = 604800000) // timeToLive : 기본 단위 seconds, default : -1 ( 만료시간X)
+@RedisHash(value="refreshToken",timeToLive = 259200)
+// timeToLive : 기본 단위 seconds, default : -1 ( 만료시간X), 60 X 60 X 24 X 3 = 259200 , 3일
 public class RefreshToken {
 
     @Id

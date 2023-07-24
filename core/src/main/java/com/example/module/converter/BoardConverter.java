@@ -9,6 +9,10 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import static com.example.module.util.security.SecurityContextHelper.getPrincipal;
+import static com.example.module.util.security.SecurityContextHelper.isAdmin;
+
+
 @Component
 @RequiredArgsConstructor
 public class BoardConverter implements
@@ -19,7 +23,10 @@ public class BoardConverter implements
 
     @Override
     public Board convert(String id) {
-        return repository.findById(Long.parseLong(id)).orElseThrow(() -> new CommonException(ErrorCode.BOARD_NOT_FOUND));
+        if (getPrincipal() != null && isAdmin()) {
+            return repository.findById(Long.parseLong(id)).orElseThrow(() -> new CommonException(ErrorCode.ACCESS_DENIED));
+        }
+        return repository.findByIdAndDeletedFalse(Long.parseLong(id)).orElseThrow(() -> new CommonException(ErrorCode.ACCESS_DENIED));
     }
 
     @Override

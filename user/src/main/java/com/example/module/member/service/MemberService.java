@@ -14,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +22,8 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import static com.example.module.util.security.SecurityContextHelper.getPrincipal;
 
 @Service
 @Transactional(readOnly = true)
@@ -69,9 +70,8 @@ public class MemberService {
     @Transactional
     public void deleteMember(String accessToken) {
         accessToken = resolveToken(accessToken);
-        var member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         //실제 로그인한사람하고 탈퇴하는사람이 같은지 체크가 필요할거같음(User) , admin은 별도 체크 X
-        member.setDeleted(true);
+        getPrincipal().setDeleted(true);
         //1. accessToken을 블랙리스트에 등록 (RestTemplate로 남은시간만큼 시간설정
         redisTemplate.opsForValue().set(
                 accessToken, "blacklisted", jwtTokenProvider.getExpiration(accessToken), TimeUnit.MILLISECONDS

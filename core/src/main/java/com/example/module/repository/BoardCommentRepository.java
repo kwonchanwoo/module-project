@@ -7,6 +7,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BoardCommentRepository extends JpaRepository<BoardComment, Long> {
-    Page<BoardComment> findByBoardOrderByIdDesc(Board board, Pageable pageable);
+    default Page<BoardComment> findAllBoardCommentCustom(Board board,Pageable pageable){
+        return findByBoardAndBoard_DeletedFalseOrderByIdDesc(board,pageable);
+    }
+    Page<BoardComment> findByBoardAndBoard_DeletedFalseOrderByIdDesc(Board board, Pageable pageable);
 
 }

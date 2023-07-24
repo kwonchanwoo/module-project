@@ -19,7 +19,7 @@ public class MemberConverter implements
 
     @Override
     public Member convert(String id) {
-        return repository.findById(Long.valueOf(id)).orElseThrow(() -> new CommonException(ErrorCode.MEMBER_NOT_FOUND));
+        return repository.findById(Long.valueOf(id)).orElseThrow(() -> new CommonException(ErrorCode.ACCESS_DENIED));
     }
 
     @Override
