@@ -26,6 +26,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        String str = "exception";
         try {
             // 1. Request Header 에서 JWT 토큰 추출
             String token = resolveToken((HttpServletRequest) request);
@@ -37,13 +38,13 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
                 request.setAttribute("X-Authorized-id", authentication.getName());
             }
         } catch (SecurityException | MalformedJwtException | IllegalArgumentException e) {
-            request.setAttribute("exception", ErrorCode.TOKEN_INVALID);
+            request.setAttribute(str, ErrorCode.TOKEN_INVALID);
         } catch (ExpiredJwtException e) {
-            request.setAttribute("exception", ErrorCode.TOKEN_EXPIRED);
+            request.setAttribute(str, ErrorCode.TOKEN_EXPIRED);
         } catch (UnsupportedJwtException e) {
-            request.setAttribute("exception", ErrorCode.TOKEN_UNSUPPORTED);
-        } catch (CommonException e){
-            request.setAttribute("exception",e.getEnumErrorCode());
+            request.setAttribute(str, ErrorCode.TOKEN_UNSUPPORTED);
+        } catch (CommonException e) {
+            request.setAttribute(str, e.getEnumErrorCode());
         }
         chain.doFilter(request, response);
     }

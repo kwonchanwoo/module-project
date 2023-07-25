@@ -7,6 +7,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 public class SecurityContextHelper {
+    private SecurityContextHelper(){}
+
     // 로그인 유저의 권한 조회
     public  static Authentication getAuthentication() {
         return SecurityContextHolder.getContext().getAuthentication();
@@ -24,14 +26,9 @@ public class SecurityContextHelper {
     }
 
     public static boolean isAuthorizedForMember(Member member){
-        if(isAdmin()){
-            return true;
-        }
-
-        if(!getPrincipal().equals(member)){
+        if(!isAdmin() && !getPrincipal().equals(member)){
             throw new CommonException(ErrorCode.TOKEN_ACCESS_DENIED);
         }
-
         return true;
     }
 }
