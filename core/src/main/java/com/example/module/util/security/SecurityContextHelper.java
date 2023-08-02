@@ -9,7 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class SecurityContextHelper {
     private SecurityContextHelper(){}
 
-    // 로그인 유저의 권한 조회 12345
+    // 로그인 유저의 권한 조회
     public  static Authentication getAuthentication() {
         return SecurityContextHolder.getContext().getAuthentication();
     }
