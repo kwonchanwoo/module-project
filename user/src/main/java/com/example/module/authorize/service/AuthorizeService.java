@@ -9,6 +9,10 @@ import com.example.module.util._Enum.ErrorCode;
 import com.example.module.util.redis.RefreshToken;
 import com.example.module.util.security.JwtTokenProvider;
 import com.example.module.util.security.dto.TokenInfo;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SecurityException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -83,21 +87,32 @@ public class AuthorizeService implements UserDetailsService {
     public TokenInfo refreshToken(
             TokenInfo tokenInfo
     ) {
-        // 1. refreshToken의 만료 체크(validation)
-        jwtTokenProvider.validateToken(tokenInfo.getRefreshToken());
+        Authentication authentication;
+        try {
+            // 1. refreshToken의 만료 체크(validation)
+            jwtTokenProvider.validateToken(tokenInfo.getRefreshToken());
 
-        // 2. acessToken으로 user정보 가져오기
-        Authentication authentication = jwtTokenProvider.getAuthentication(tokenInfo.getAccessToken());
-        Member member = memberRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new CommonException(ErrorCode.ACCESS_DENIED));
+            // 2. acessToken으로 user정보 가져오기
+            authentication = jwtTokenProvider.getAuthentication(tokenInfo.getAccessToken());
+            Member member = memberRepository.findByEmail(authentication.getName())
+                    .orElseThrow(() -> new CommonException(ErrorCode.ACCESS_DENIED));
 
-        // 3. refreshToken과 갖고온 user 정보로 refreshToken 존재 여부 확인
-        if (refreshTokenRepository.findByEmailAndToken(member.getEmail(), tokenInfo.getRefreshToken()).isEmpty()) {
+            // 3. refreshToken과 갖고온 user 정보로 refreshToken 존재 여부 확인
+            if (refreshTokenRepository.findByEmailAndToken(member.getEmail(), tokenInfo.getRefreshToken()).isEmpty()) {
+                throw new CommonException(ErrorCode.TOKEN_INVALID);
+            }
+            //4. accessToken을 블랙리스트에 등록 (RestTemplate로 남은시간만큼 시간설정
+            addBlackList(tokenInfo.getAccessToken());
+
+        } catch (SecurityException | MalformedJwtException | IllegalArgumentException e) {
             throw new CommonException(ErrorCode.TOKEN_INVALID);
+        } catch (ExpiredJwtException e) {
+            throw new CommonException(ErrorCode.TOKEN_EXPIRED);
+        } catch (UnsupportedJwtException e) {
+            throw new CommonException(ErrorCode.TOKEN_UNSUPPORTED);
+        } catch (CommonException e) {
+            throw new CommonException(e.getEnumErrorCode());
         }
-        //4. accessToken을 블랙리스트에 등록 (RestTemplate로 남은시간만큼 시간설정
-        addBlackList(tokenInfo.getAccessToken());
-
         // 5. accessToken 재발급
         return jwtTokenProvider.generateToken(authentication, tokenInfo.getRefreshToken());
     }
@@ -119,7 +134,7 @@ public class AuthorizeService implements UserDetailsService {
         return null;
     }
 
-    private void addBlackList(String accessToken){
+    private void addBlackList(String accessToken) {
         redisTemplate.opsForValue().set(
                 accessToken, "blacklisted", jwtTokenProvider.getExpiration(accessToken), TimeUnit.MILLISECONDS
         );

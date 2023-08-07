@@ -12,6 +12,6 @@ import javax.validation.constraints.NotEmpty;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BoardCommentUpdateDto {
-    @NotEmpty(message = "내용을 작성해주세요.")
+    @NotEmpty(message = "내용을 작성 해 주세요.")
     private String contents;
 }
