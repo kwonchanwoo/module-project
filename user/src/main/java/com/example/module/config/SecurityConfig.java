@@ -1,18 +1,18 @@
 package com.example.module.config;
 
-import com.example.module.util.security.exception.CustomAccessDeniedHandler;
-import com.example.module.util.security.exception.CustomAuthenticationEntryPoint;
 import com.example.module.util.security.JwtAuthenticationFilter;
 import com.example.module.util.security.JwtTokenProvider;
+import com.example.module.util.security.exception.CustomAccessDeniedHandler;
+import com.example.module.util.security.exception.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyUtils;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -49,6 +49,17 @@ public class SecurityConfig {
         // roleHierarchy.setHierarchy("ROLE_ADMIN > ROLE_MANAGER\nROLE_MANAGER > ROLE_POST\nROLE_MANAGER > ROLE_COMMENT\nROLE_MANAGER > ROLE_FILE\nROLE_USER > ROLE_POST");
         return roleHierarchy;
     }
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring()
+                .antMatchers(
+                        "/members/join",
+                        "/authorize/login",
+                        "/authorize/refresh-token"
+                );
+    }
+
     // 시큐리티 커스텀 설정
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -60,11 +71,11 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers(
-                        "/members/join",
-                        "/authorize/login",
-                        "/authorize/refresh-token"
-                ).permitAll()
+//                .antMatchers(
+//                        "/members/join",
+//                        "/authorize/login",
+//                        "/authorize/refresh-token"
+//                ).permitAll()
                 .anyRequest().hasRole("USER")
                 .and()
                 .exceptionHandling()
