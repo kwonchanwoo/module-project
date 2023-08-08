@@ -38,7 +38,8 @@ List the ready features here:
 
 
 ## Screenshots
-![Example screenshot](./img/screenshot.png)
+![Example screenshot]![화면 캡처 2023-08-02 115828](https://github.com/kwonchanwoo/module-project/assets/51899270/fef02289-ba45-4d42-8eef-0d17867e7f8b)
+
 <!-- If you have screenshots you'd like to share, include them here. -->
 
 
