@@ -50,15 +50,15 @@ public class SecurityConfig {
         return roleHierarchy;
     }
 
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring()
-                .antMatchers(
-                        "/members/join",
-                        "/authorize/login",
-                        "/authorize/refresh-token"
-                );
-    }
+//    @Bean
+//    public WebSecurityCustomizer webSecurityCustomizer() {
+//        return (web) -> web.ignoring()
+//                .antMatchers(
+//                        "/members/join",
+//                        "/authorize/login",
+//                        "/authorize/refresh-token"
+//                );
+//    }
 
     // 시큐리티 커스텀 설정
     @Bean
@@ -71,11 +71,11 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-//                .antMatchers(
-//                        "/members/join",
-//                        "/authorize/login",
-//                        "/authorize/refresh-token"
-//                ).permitAll()
+                .antMatchers(
+                        "/members/join",
+                        "/authorize/login",
+                        "/authorize/refresh-token"
+                ).permitAll()
                 .anyRequest().hasRole("USER")
                 .and()
                 .exceptionHandling()
@@ -96,6 +96,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.addAllowedOriginPattern("*");
+        configuration.addAllowedOrigin("http://localhost:8000");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
         configuration.setAllowCredentials(true);
