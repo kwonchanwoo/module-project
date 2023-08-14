@@ -1,5 +1,6 @@
 package com.example.module.member.service;
 
+import com.example.module.annotation.CommonLog;
 import com.example.module.entity.Member;
 import com.example.module.member.dto.MemberCreateDto;
 import com.example.module.member.dto.MemberDto;
@@ -7,6 +8,7 @@ import com.example.module.repository.MemberRepository;
 import com.example.module.repository.RefreshTokenRepository;
 import com.example.module.spec.MemberSpec;
 import com.example.module.util.CommonException;
+import com.example.module.util._Enum.CommonAction;
 import com.example.module.util._Enum.ErrorCode;
 import com.example.module.util.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +51,7 @@ public class MemberService {
     }
 
     @Transactional
+    @CommonLog(title="회원 가입",commonAction= CommonAction.INSERT)
     public void join(MemberCreateDto memberCreateDto) {
         memberRepository.findByEmail(memberCreateDto.getEmail())
                 .ifPresent((member -> {
@@ -68,6 +71,7 @@ public class MemberService {
     }
 
     @Transactional
+    @CommonLog(title="회원 탈퇴",commonAction= CommonAction.UPDATE)
     public void deleteMember(String accessToken) {
         accessToken = resolveToken(accessToken);
         //실제 로그인한사람하고 탈퇴하는사람이 같은지 체크가 필요할거같음(User) , admin은 별도 체크 X

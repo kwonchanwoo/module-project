@@ -1,10 +1,12 @@
 package com.example.module.authorize.service;
 
+import com.example.module.annotation.CommonLog;
 import com.example.module.authorize.dto.LoginDto;
 import com.example.module.entity.Member;
 import com.example.module.repository.MemberRepository;
 import com.example.module.repository.RefreshTokenRepository;
 import com.example.module.util.CommonException;
+import com.example.module.util._Enum.CommonAction;
 import com.example.module.util._Enum.ErrorCode;
 import com.example.module.util.redis.RefreshToken;
 import com.example.module.util.security.JwtTokenProvider;
@@ -43,6 +45,7 @@ public class AuthorizeService implements UserDetailsService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional
+    @CommonLog(title="로그인",commonAction= CommonAction.SELECT)
     public TokenInfo login(LoginDto loginDto) {
         try {
             // 1. Login ID/PW 를 기반으로 Authentication 객체 생성
@@ -84,6 +87,7 @@ public class AuthorizeService implements UserDetailsService {
                 .build();
     }
 
+    @CommonLog(title="토큰 재발급",commonAction= CommonAction.SELECT)
     public TokenInfo refreshToken(
             TokenInfo tokenInfo
     ) {
@@ -117,6 +121,7 @@ public class AuthorizeService implements UserDetailsService {
         return jwtTokenProvider.generateToken(authentication, tokenInfo.getRefreshToken());
     }
 
+    @CommonLog(title="로그아웃",commonAction= CommonAction.SELECT)
     public void logout(String accessToken) {
         accessToken = resolveToken(accessToken);
         //1. accessToken을 블랙리스트에 등록 (RestTemplate로 남은시간만큼 시간설정
@@ -133,7 +138,7 @@ public class AuthorizeService implements UserDetailsService {
         }
         return null;
     }
-
+    // redis - add blacklist
     private void addBlackList(String accessToken) {
         redisTemplate.opsForValue().set(
                 accessToken, "blacklisted", jwtTokenProvider.getExpiration(accessToken), TimeUnit.MILLISECONDS

@@ -13,7 +13,9 @@ spring:
         - devcore
       prod:
         - core
-
+logging:
+  level:
+    com.example.module.config.aop : debug
 
 
 

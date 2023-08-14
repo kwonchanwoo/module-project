@@ -1,5 +1,7 @@
 package com.example.module.barcode.service;
 
+import com.example.module.annotation.CommonLog;
+import com.example.module.util._Enum.CommonAction;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
@@ -18,6 +20,7 @@ import java.io.IOException;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class BarcodeService {
+    @CommonLog(title="QR 생성",commonAction= CommonAction.SELECT)
     public Object generateQRCodeImage(String barcodeText) throws WriterException, IOException {
         BitMatrix matrix = new MultiFormatWriter().encode(barcodeText, BarcodeFormat.QR_CODE, 200, 200);
         try (ByteArrayOutputStream out = new ByteArrayOutputStream();) {
