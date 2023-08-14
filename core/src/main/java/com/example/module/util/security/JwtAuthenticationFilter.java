@@ -6,6 +6,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.SecurityException;
+import io.lettuce.core.RedisCommandExecutionException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -43,6 +44,8 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             request.setAttribute(str, ErrorCode.TOKEN_EXPIRED);
         } catch (UnsupportedJwtException e) {
             request.setAttribute(str, ErrorCode.TOKEN_UNSUPPORTED);
+        } catch(RedisCommandExecutionException e){
+            request.setAttribute(str,ErrorCode.REDIS_COMMAND_EXECUTION);
         } catch (CommonException e) {
             request.setAttribute(str, e.getEnumErrorCode());
         }

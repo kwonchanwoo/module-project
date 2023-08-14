@@ -15,6 +15,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.SecurityException;
+import io.lettuce.core.RedisCommandExecutionException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -45,7 +46,7 @@ public class AuthorizeService implements UserDetailsService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional
-    @CommonLog(title="로그인",commonAction= CommonAction.SELECT)
+    @CommonLog(title = "로그인", commonAction = CommonAction.SELECT)
     public TokenInfo login(LoginDto loginDto) {
         try {
             // 1. Login ID/PW 를 기반으로 Authentication 객체 생성
@@ -87,7 +88,7 @@ public class AuthorizeService implements UserDetailsService {
                 .build();
     }
 
-    @CommonLog(title="토큰 재발급",commonAction= CommonAction.SELECT)
+    @CommonLog(title = "토큰 재발급", commonAction = CommonAction.SELECT)
     public TokenInfo refreshToken(
             TokenInfo tokenInfo
     ) {
@@ -114,6 +115,8 @@ public class AuthorizeService implements UserDetailsService {
             throw new CommonException(ErrorCode.TOKEN_EXPIRED);
         } catch (UnsupportedJwtException e) {
             throw new CommonException(ErrorCode.TOKEN_UNSUPPORTED);
+        } catch (RedisCommandExecutionException e) {
+            throw new CommonException(ErrorCode.REDIS_COMMAND_EXECUTION);
         } catch (CommonException e) {
             throw new CommonException(e.getEnumErrorCode());
         }
@@ -121,7 +124,7 @@ public class AuthorizeService implements UserDetailsService {
         return jwtTokenProvider.generateToken(authentication, tokenInfo.getRefreshToken());
     }
 
-    @CommonLog(title="로그아웃",commonAction= CommonAction.SELECT)
+    @CommonLog(title = "로그아웃", commonAction = CommonAction.SELECT)
     public void logout(String accessToken) {
         accessToken = resolveToken(accessToken);
         //1. accessToken을 블랙리스트에 등록 (RestTemplate로 남은시간만큼 시간설정
@@ -138,6 +141,7 @@ public class AuthorizeService implements UserDetailsService {
         }
         return null;
     }
+
     // redis - add blacklist
     private void addBlackList(String accessToken) {
         redisTemplate.opsForValue().set(

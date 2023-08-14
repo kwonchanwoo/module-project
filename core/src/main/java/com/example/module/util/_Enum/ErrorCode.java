@@ -14,22 +14,25 @@ public enum ErrorCode {
     TOKEN_UNSUPPORTED(HttpStatus.BAD_REQUEST, 400, "지원되지 않는 JWT 토큰 형식입니다."),
 
     //common
-    ACCESS_DENIED(HttpStatus.FORBIDDEN,403,"잘못된 접근입니다."), // // 권한이 없다고 표현하면 악용 될수있어서 잘못된 접근으로 처리
+    ACCESS_DENIED(HttpStatus.FORBIDDEN, 403, "잘못된 접근입니다."), // // 권한이 없다고 표현하면 악용 될수있어서 잘못된 접근으로 처리
 
     // member
-//    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "Member not found"),
+    //    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "Member not found"),
     MEMBER_DUPLICATED(HttpStatus.CONFLICT, 409, "Member is duplicated"),
 
     // board
-//    BOARD_COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "Board_Comment not found"),
-//    BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "Board not found"),
+    //    BOARD_COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "Board_Comment not found"),
+    //    BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, 404, "Board not found"),
+
+    // redis
+    REDIS_COMMAND_EXECUTION(HttpStatus.SERVICE_UNAVAILABLE,503,"redis에서 문제가 발생 하였습니다."),
 
     // login
-    LOGIN_FAILED(HttpStatus.UNAUTHORIZED,401,"로그인에 실패하였습니다."),
+    LOGIN_FAILED(HttpStatus.UNAUTHORIZED, 401, "로그인에 실패하였습니다."),
 
     // enum
-    ENUM_GENDER_INVALID(HttpStatus.BAD_REQUEST,400,"성별을 잘못 입력 하였 습니다."),
-    ENUM_BOARD_CATEGORY_INVALID(HttpStatus.BAD_REQUEST,400,"게시판 종류를 잘못 입력 하였 습니다.");
+    ENUM_GENDER_INVALID(HttpStatus.BAD_REQUEST, 400, "성별을 잘못 입력 하였 습니다."),
+    ENUM_BOARD_CATEGORY_INVALID(HttpStatus.BAD_REQUEST, 400, "게시판 종류를 잘못 입력 하였 습니다.");
 
     private final HttpStatus httpStatus;
     private final Integer code;
