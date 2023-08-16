@@ -17,6 +17,10 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
         ErrorCode errorCode = (ErrorCode) request.getAttribute("exception");
+        if(errorCode == null){
+            log.debug(authException.getLocalizedMessage());
+            errorCode = ErrorCode.TOKEN_ACCESS_DENIED;
+        }
         setResponse(response, errorCode);
     }
     /**

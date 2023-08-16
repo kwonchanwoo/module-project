@@ -27,7 +27,7 @@ public class AuthorizeController {
         return authorizeService.login(loginDto);
     }
 
-    @GetMapping("/refresh-token")
+    @PostMapping("/refresh-token")
     public TokenInfo refreshToken(
             @RequestBody TokenInfo tokenInfo
     ) {

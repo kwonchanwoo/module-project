@@ -134,9 +134,15 @@ public class JwtTokenProvider {
 
     public Long getExpiration(String accessToken) {
         // accessToken 남은 유효시간
-        Date expiration = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody().getExpiration();
-        // 현재 시간
-        Long now = new Date().getTime();
+        Date expiration = null;
+        Long now = 0L;
+        try {
+             expiration = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody().getExpiration();
+            // 현재 시간
+             now = new Date().getTime();
+        }catch(Exception e){
+            return 1L;
+        }
         return (expiration.getTime() - now);
     }
 }

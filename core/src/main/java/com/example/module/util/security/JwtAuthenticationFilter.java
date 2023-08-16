@@ -44,8 +44,8 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             request.setAttribute(str, ErrorCode.TOKEN_EXPIRED);
         } catch (UnsupportedJwtException e) {
             request.setAttribute(str, ErrorCode.TOKEN_UNSUPPORTED);
-        } catch(RedisCommandExecutionException e){
-            request.setAttribute(str,ErrorCode.REDIS_COMMAND_EXECUTION);
+        } catch (RedisCommandExecutionException e) {
+            request.setAttribute(str, ErrorCode.REDIS_COMMAND_EXECUTION);
         } catch (CommonException e) {
             request.setAttribute(str, e.getEnumErrorCode());
         }
